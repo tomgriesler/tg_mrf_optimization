@@ -205,7 +205,7 @@ def dt2prep_dt2_epg(t2: torch.tensor, t2te: torch.tensor):
                         torch.stack([zero, zero, t2te/t2**2 * np.exp(-t2te/t2)])]).type(torch.cfloat)
 
 
-def calculate_signal_epg(t1: float, t2:float, m0: float, beats: int, shots: int, fa: Union[np.ndarray, torch.tensor], tr: Union[np.ndarray, torch.tensor], ph: Union[np.ndarray, torch.tensor], prep: List[int], ti: List[int], t2te: List[int], te: float, inv_eff: float=1., delta_B1: float=1.):
+def calculate_signal_fisp_epg(t1: float, t2:float, m0: float, beats: int, shots: int, fa: Union[np.ndarray, torch.tensor], tr: Union[np.ndarray, torch.tensor], ph: Union[np.ndarray, torch.tensor], prep: List[int], ti: List[int], t2te: List[int], te: float, inv_eff: float=1., delta_B1: float=1.):
     """
     Function to calculate the resulting complex signal of a voxel for a given MRF sequence using EPG.
 
@@ -287,7 +287,7 @@ def calculate_signal_epg(t1: float, t2:float, m0: float, beats: int, shots: int,
     return signal
 
 
-def calculate_crlb_sc_epg(t1: float, t2:float, m0: float, beats: int, shots: int, fa: Union[np.ndarray, torch.tensor], tr: Union[np.ndarray, torch.tensor], ph: Union[np.ndarray, torch.tensor], prep: List[int], ti: List[int], t2te: List[int], te: float, inv_eff: float=1., delta_B1: float=1.):
+def calculate_crlb_fisp_sc_epg(t1: float, t2:float, m0: float, beats: int, shots: int, fa: Union[np.ndarray, torch.tensor], tr: Union[np.ndarray, torch.tensor], ph: Union[np.ndarray, torch.tensor], prep: List[int], ti: List[int], t2te: List[int], te: float, inv_eff: float=1., delta_B1: float=1.):
     """
     Function to calculate the CRLB matrix of a single component voxel for a given MRF sequence using EPG.
 
@@ -409,7 +409,7 @@ def calculate_crlb_sc_epg(t1: float, t2:float, m0: float, beats: int, shots: int
     return v  
 
 
-def calculate_crlb_mc_epg(t1: List[float], t2: List[float], m0: float, ratio: float, beats: int, shots: int, fa: Union[np.ndarray, torch.tensor], tr: Union[np.ndarray, torch.tensor], ph: Union[np.ndarray, torch.tensor], prep: List[int], ti: List[int], t2te: List[int], te: float, inv_eff: float=1., delta_B1: float=1.):
+def calculate_crlb_fisp_mc_epg(t1: List[float], t2: List[float], m0: float, ratio: float, beats: int, shots: int, fa: Union[np.ndarray, torch.tensor], tr: Union[np.ndarray, torch.tensor], ph: Union[np.ndarray, torch.tensor], prep: List[int], ti: List[int], t2te: List[int], te: float, inv_eff: float=1., delta_B1: float=1.):
     """
     Function to calculate the CRLB of a two component voxel for a given MRF sequence using EPG.
 
@@ -564,7 +564,7 @@ def calculate_orth_epg(t1: List[float], t2: List[float], beats: int, shots: int,
     # Calculate signals for all tissues
     for ii in range(n_tissues):
         # Set m0 to 1 as the signals will be normalized anyway
-        s[ii] = calculate_signal_epg(t1[ii], t2[ii], 1, beats, shots, fa, tr, ph, prep, ti, t2te, te, inv_eff, delta_B1)
+        s[ii] = calculate_signal_fisp_epg(t1[ii], t2[ii], 1, beats, shots, fa, tr, ph, prep, ti, t2te, te, inv_eff, delta_B1)
 
     # Normalize signals
     s = torch.nn.functional.normalize(s, dim=1)

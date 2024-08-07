@@ -12,33 +12,33 @@ import numpy as np
 import scipy
 from typing import List, Union, Optional
 
-from signalmodel_iso import calculate_crlb_sc_iso, calculate_crlb_mc_iso, calculate_orth_iso
-from signalmodel_epg import calculate_crlb_sc_epg, calculate_crlb_mc_epg, calculate_orth_epg
+from signalmodel_bloch import calculate_crlb_fisp_sc_bloch, calculate_crlb_fisp_mc_bloch, calculate_orth_bloch
+from signalmodel_epg import calculate_crlb_fisp_sc_epg, calculate_crlb_fisp_mc_epg, calculate_orth_epg
 from tools import to_tensor
 
 
 def calculate_cost(costfunction, weighting, t1, t2, m0, ratio, beats, shots, fa, tr, ph, prep, ti, t2te, te, inv_eff, delta_B1, n_iso, deph):
 
-    if costfunction == 'crlb_sc_iso':
-        crlb = calculate_crlb_sc_iso(t1, t2, m0, beats, shots, fa, tr, ph, prep, ti, t2te, te, inv_eff, delta_B1, n_iso, deph)
+    if costfunction == 'crlb_sc_bloch':
+        crlb = calculate_crlb_fisp_sc_bloch(t1, t2, m0, beats, shots, fa, tr, ph, prep, ti, t2te, te, inv_eff, delta_B1, n_iso, deph)
         weighting = to_tensor(weighting, torch.double)
         cost = torch.sum(torch.sqrt(torch.diagonal(crlb)) * weighting)
 
     elif costfunction == 'crlb_sc_epg': 
-        crlb = calculate_crlb_sc_epg(t1, t2, m0, beats, shots, fa, tr, ph, prep, ti, t2te, te, inv_eff, delta_B1)
+        crlb = calculate_crlb_fisp_sc_epg(t1, t2, m0, beats, shots, fa, tr, ph, prep, ti, t2te, te, inv_eff, delta_B1)
         weighting = to_tensor(weighting, torch.double)
         cost = torch.sum(torch.sqrt(torch.diagonal(crlb)) * weighting)
 
-    elif costfunction == 'crlb_mc_iso': 
-        crlb = calculate_crlb_mc_iso(t1, t2, m0, ratio, beats, shots, fa, tr, ph, prep, ti, t2te, te, inv_eff, delta_B1, n_iso, deph)
+    elif costfunction == 'crlb_mc_bloch': 
+        crlb = calculate_crlb_fisp_mc_bloch(t1, t2, m0, ratio, beats, shots, fa, tr, ph, prep, ti, t2te, te, inv_eff, delta_B1, n_iso, deph)
         cost = torch.sqrt(crlb)
 
     elif costfunction == 'crlb_mc_epg':
-        crlb = calculate_crlb_mc_epg(t1, t2, m0, ratio, beats, shots, fa, tr, ph, prep, ti, t2te, te, inv_eff, delta_B1)
+        crlb = calculate_crlb_fisp_mc_epg(t1, t2, m0, ratio, beats, shots, fa, tr, ph, prep, ti, t2te, te, inv_eff, delta_B1)
         cost = torch.sqrt(crlb)    
 
-    elif costfunction == 'orth_iso': 
-        cost = calculate_orth_iso(t1, t2, beats, shots, fa, tr, ph, prep, ti, t2te, te, inv_eff, delta_B1, n_iso, deph)
+    elif costfunction == 'orth_bloch': 
+        cost = calculate_orth_bloch(t1, t2, beats, shots, fa, tr, ph, prep, ti, t2te, te, inv_eff, delta_B1, n_iso, deph)
 
     elif costfunction == 'orth_epg': 
         cost = calculate_orth_epg(t1, t2, beats, shots, fa, tr, ph, prep, ti, t2te, te, inv_eff, delta_B1)
@@ -108,7 +108,7 @@ def optimize_sequence(costfunction: str, t1: Union[float, List[float]], t2: Unio
     Function to optimize the flip angles and repetition times in an MRF sequence using the SLSQP algorithm.
 
     Args:
-        costfunction (str): cost function to be used, must be 'crlb_sc_iso', 'crlb_sc_epg', 'crlb_mc_iso', 'crlb_mc_epg', 'orth_iso', 'orth_epg'
+        costfunction (str): cost function to be used, must be 'crlb_sc_bloch', 'crlb_sc_epg', 'crlb_mc_bloch', 'crlb_mc_epg', 'orth_bloch', 'orth_epg'
         t1 (float/list of floats): target longitudinal relaxation time(s) in ms
         t2 (float/list of floats): target transversal relaxation time(s) in ms
         m0 (float): equilibrium magnetization
@@ -127,8 +127,8 @@ def optimize_sequence(costfunction: str, t1: Union[float, List[float]], t2: Unio
         n_iter_max (int): maximal number of iterations
 
     Keyword Args: 
-        weighting (list of floats): diagonal entries of the CRLB weighting matrix. Only necessary for 'crlb_sc_iso' and 'crlb_sc_epg' cost functions
-        ratio (float): ratio of the first component of the total voxel. Only necessary for 'crlb_mc_iso' and 'crlb_mc_epg' cost functions
+        weighting (list of floats): diagonal entries of the CRLB weighting matrix. Only necessary for 'crlb_sc_bloch' and 'crlb_sc_epg' cost functions
+        ratio (float): ratio of the first component of the total voxel. Only necessary for 'crlb_mc_bloch' and 'crlb_mc_epg' cost functions
         slsqp_scaling (float): The SLSQP algorithm doesn't have a learning rate parameter to control the convergence behavior. However, convergence depends on the absolute values of the gradients and can be artificially controlled by multiplying the cost function values by a factor. Appropriate values depend on the used cost function and have to be determined somewhat heuristically by monitoring optimization behavior. 
         optimize_tr (bool): if set to False, only flip angles are optimized
         tr_min (float): minimal allowed repetition time in ms

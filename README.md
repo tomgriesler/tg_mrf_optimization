@@ -6,7 +6,7 @@ tomgr@umich.edu
 
 
 OVERVIEW
-- signalmodel_iso.py: code for MRF signal simulation and cost function calculation using the isochromat summation approach and Bloch equations.
+- signalmodel_bloch.py: code for MRF signal simulation and cost function calculation using the isochromat summation approach and Bloch equations.
 - signalmodel_epg.py: code for MRF signal simulation and cost function calculation in an EPG implementation.
 - slsqp.py: implementation of the SLSQP algorithm for MRF sequence optimization. 
 - tools.py: contains a helper function that is used in multiple scripts. 
