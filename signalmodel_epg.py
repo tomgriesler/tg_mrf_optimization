@@ -278,7 +278,7 @@ def calculate_signal_epg(t1: float, t2:float, m0: float, beats: int, shots: int,
             omega[2, 0] = omega[2, 0] + m0*b_te
             
             # Calculate complex signal
-            signal[n] = omega[0,0] * torch.exp(-1j*torch.deg2rad(ph[n]))
+            signal[n] = omega[0,0] * torch.exp(1j*torch.deg2rad(ph[n]))
 
             # Update state matrix (relaxation during TR-TE, gradient dephasing)
             omega = epg_grad(r_epg(t1, t2, tr[n]-te) @ omega)
