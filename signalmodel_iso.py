@@ -295,7 +295,7 @@ def calculate_signal_iso(t1: float, t2: float, m0: float, beats: int, shots: int
                 m_trans = m_trans + P @ m[iso]
 
             # Calculate complex signal
-            signal[n] = (m_trans[0] + 1j*m_trans[1]) * torch.exp(-1j*torch.deg2rad(ph[n]))
+            signal[n] = (m_trans[0] + 1j*m_trans[1]) * torch.exp(1j*torch.deg2rad(ph[n]))
 
             # Update magnetization (relaxation during TR-TE, gradient dephasing)
             for iso in range(n_iso):                
