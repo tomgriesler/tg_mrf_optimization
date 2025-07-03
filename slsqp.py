@@ -43,6 +43,9 @@ def calculate_cost(costfunction, weighting, t1, t2, m0, ratio, beats, shots, fa,
     elif costfunction == 'orth_epg': 
         cost = calculate_orth_epg(t1, t2, beats, shots, fa, tr, ph, prep, ti, t2te, te, inv_eff, delta_B1)
 
+    elif costfunction == 'discrimination_epg':
+        cost = calculate_crlb_sc_epg(t1[0], t2[0], m0, beats, shots, fa, tr, ph, prep, ti, t2te, te, inv_eff, delta_B1) + calculate_crlb_sc_epg(t1[1], t2[1], m0, beats, shots, fa, tr, ph, prep, ti, t2te, te, inv_eff, delta_B1) + ratio * calculate_orth_epg(t1, t2, beats, shots, fa, tr, ph, prep, ti, t2te, te, inv_eff, delta_B1)
+
     return cost
 
 
